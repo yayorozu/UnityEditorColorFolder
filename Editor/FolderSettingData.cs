@@ -128,11 +128,33 @@ namespace Yorozu.EditorTool
                 {
                     if (string.IsNullOrEmpty(pattern))
                         continue;
-                    
-                    if (Regex.IsMatch(fileName, pattern))
+
+                    // 正規表現入力中はエラーになることがあるので無視する
+                    try
                     {
-                        findIndex = i;
-                        return true;
+                        if (Regex.IsMatch(fileName, pattern))
+                        {
+                            findIndex = i;
+                            return true;
+                        }
+
+                        // 子供のディレクトリも色変える場合は^$を削除して判定する
+                        if (_settings[i].ValidChild)
+                        {
+                            var rootPattern = pattern;
+                            if (pattern.StartsWith("^"))
+                                rootPattern = rootPattern.Substring(1);
+                            if (pattern.EndsWith("$"))
+                                rootPattern = rootPattern.Substring(0, rootPattern.Length - 1);
+                            if (Regex.IsMatch(path, $"/{rootPattern}/"))
+                            {
+                                findIndex = i;
+                                return true;
+                            }
+                        }
+                    }
+                    catch
+                    {
                     }
                 }
             }
