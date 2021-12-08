@@ -9,6 +9,19 @@ namespace Yorozu.EditorTool
 {
     public class FolderSettingData : ScriptableObject
     {
+        [MenuItem("Tools/Yorozu/ColorFolder/SelectSetting")]
+        private static void Select()
+        {
+            var findGuids = AssetDatabase.FindAssets($"t:{nameof(FolderSettingData)}");
+            if (findGuids.Length <= 0)
+                return;
+
+            var path = AssetDatabase.GUIDToAssetPath(findGuids[0]);
+
+            var data = AssetDatabase.LoadAssetAtPath<FolderSettingData>(path);
+            EditorGUIUtility.PingObject(data);
+        }
+        
         [SerializeField]
         private Texture2D _baseTexture;
 
