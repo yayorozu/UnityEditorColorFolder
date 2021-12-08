@@ -14,14 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseTexture: {fileID: 2800000, guid: b0e1365677f88472f9d1e250a700f5c0, type: 3}
   _settings:
-  - Color: {r: 1, g: 0, b: 0, a: 1}
+  - Color: {r: 0.3189863, g: 1, b: 0, a: 1}
     ChangeTexture: {fileID: 0}
-    ValidChild: 0
+    ValidChild: 1
     Pattern:
     - Script
-    - ^A
-  - Color: {r: 0.02666688, g: 1, b: 0, a: 1}
-    ChangeTexture: {fileID: 2800000, guid: 7427bc34d22a6416ea2b5e0286a5bc3c, type: 3}
-    ValidChild: 0
+  - Color: {r: 1, g: 0.1682256, b: 0, a: 1}
+    ChangeTexture: {fileID: 0}
+    ValidChild: 1
     Pattern:
-    - Scene
+    - Edi
