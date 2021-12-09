@@ -1,0 +1,17 @@
+{
+  "name": "yorozu.editor-tool",
+  "version": "1.0.0",
+  "displayName": "Color Folder",
+  "description": "Can Change Project Window Folder Icon or Color",
+  "unity": "2020.3",
+  "keywords": [
+    "EditorTool",
+    "Yorozu",
+    "ProjectWindow"
+  ],
+  "author": {
+    "name": "Yorozu",
+    "email": "hatch.tech.eng@gmail.com",
+    "url": "https://github.com/yayorozu"
+  }
+}
