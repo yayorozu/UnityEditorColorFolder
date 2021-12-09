@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Yorozu.EditorTool.Folder
+namespace Yorozu.EditorTool.ColorFolder
 {
     [CustomEditor(typeof(FolderSettingData))]
     public class FolderSettingEditor : Editor

@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace Yorozu.EditorTool.Folder
+namespace Yorozu.EditorTool.ColorFolder
 {
     public static class Utility
     {

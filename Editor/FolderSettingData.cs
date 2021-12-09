@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Yorozu.EditorTool.Folder
+namespace Yorozu.EditorTool.ColorFolder
 {
     /// <summary>
     /// どこか行ったときようにPing
