@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Yorozu.EditorTool
+namespace Yorozu.EditorTool.Folder
 {
-    public static class ColorFolder2
+    public static class ColorFolderGUI
     {
         [InitializeOnLoadMethod]
         private static void ProjectWindow()
@@ -20,15 +20,15 @@ namespace Yorozu.EditorTool
                 return;
             
             var findGuids = AssetDatabase.FindAssets($"t:{nameof(FolderSettingData)}");
+            // データないなら描画処理を消す
             if (findGuids.Length <= 0)
             {
-                _setting = ScriptableObject.CreateInstance<FolderSettingData>();
+                EditorApplication.projectWindowItemOnGUI -= ProjectWindowGUI;
+                return;
             }
-            else
-            {
-                var path = AssetDatabase.GUIDToAssetPath(findGuids[0]);
-                _setting = AssetDatabase.LoadAssetAtPath<FolderSettingData>(path);
-            }
+
+            var path = AssetDatabase.GUIDToAssetPath(findGuids[0]);
+            _setting = AssetDatabase.LoadAssetAtPath<FolderSettingData>(path);
         }
 
         private static void ProjectWindowGUI(string guid, Rect rect)
