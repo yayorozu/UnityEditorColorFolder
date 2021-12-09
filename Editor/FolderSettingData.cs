@@ -12,7 +12,7 @@ namespace Yorozu.EditorTool.Folder
     /// </summary>
     public class FolderSettingData : ScriptableObject
     {
-        [MenuItem("Tools/Yorozu/ColorFolder/Ping FolderSetting")]
+        [MenuItem("Tools/ColorFolder/Ping FolderSetting")]
         private static void Select()
         {
             var findGuids = AssetDatabase.FindAssets($"t:{nameof(FolderSettingData)}");
@@ -29,7 +29,7 @@ namespace Yorozu.EditorTool.Folder
         /// <summary>
         /// 設定ファイルの生成
         /// </summary>
-        [MenuItem("Tools/Yorozu/ColorFolder/CreateFolderSetting")]
+        [MenuItem("Tools/ColorFolder/CreateFolderSetting")]
         private static void Create()
         {
             var path =EditorUtility.SaveFilePanelInProject("Select Create Asset Path", nameof(FolderSettingData), "asset", "");
