@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Yorozu.EditorTool.Folder
 {
+    /// <summary>
+    /// どこか行ったときようにPing
+    /// </summary>
     public class FolderSettingData : ScriptableObject
     {
-        [MenuItem("Tools/Yorozu/ColorFolder/SelectSetting")]
+        [MenuItem("Tools/Yorozu/ColorFolder/Ping FolderSetting")]
         private static void Select()
         {
             var findGuids = AssetDatabase.FindAssets($"t:{nameof(FolderSettingData)}");
@@ -20,6 +23,22 @@ namespace Yorozu.EditorTool.Folder
 
             var data = AssetDatabase.LoadAssetAtPath<FolderSettingData>(path);
             EditorGUIUtility.PingObject(data);
+            Selection.activeObject = data;
+        }
+        
+        /// <summary>
+        /// 設定ファイルの生成
+        /// </summary>
+        [MenuItem("Tools/Yorozu/ColorFolder/CreateFolderSetting")]
+        private static void Create()
+        {
+            var path =EditorUtility.SaveFilePanelInProject("Select Create Asset Path", nameof(FolderSettingData), "asset", "");
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var asset = CreateInstance<FolderSettingData>();
+            AssetDatabase.CreateAsset(asset, path);
+            AssetDatabase.Refresh();
         }
         
         [NonSerialized]
@@ -43,11 +62,12 @@ namespace Yorozu.EditorTool.Folder
             [SerializeField] 
             internal bool ValidChild;
             [SerializeField]
-            internal List<string> Pattern;
+            internal List<string> Pattern = new List<string>();
         }
         
+        [FormerlySerializedAs("_settings")]
         [SerializeField]
-        private List<Setting> _settings = new List<Setting>();
+        internal List<Setting> Settings = new List<Setting>();
         
         private const float RowHeight = 16f;
         /// <summary>
@@ -99,13 +119,13 @@ namespace Yorozu.EditorTool.Folder
             }
 
             // テクスチャ置き換えの場合
-            if (_settings[index].ChangeTexture != null)
+            if (Settings[index].ChangeTexture != null)
             {
                 // もともとあるやつを非表示にはできないのでぽい色で上書き
                 GUI.DrawTexture(rect, _bgTexture, ScaleMode.StretchToFill);
             }
 
-            var texture = GetCacheTexture(index, _settings[index]);
+            var texture = GetCacheTexture(index, Settings[index]);
             if (texture != null)
                 GUI.DrawTexture(rect, texture, ScaleMode.ScaleToFit);
         }
@@ -113,9 +133,9 @@ namespace Yorozu.EditorTool.Folder
         private bool Match(string path, out int findIndex)
         {
             var fileName = System.IO.Path.GetFileName(path);
-            for (var i = 0; i < _settings.Count; i++)
+            for (var i = 0; i < Settings.Count; i++)
             {
-                foreach (var pattern in _settings[i].Pattern)
+                foreach (var pattern in Settings[i].Pattern)
                 {
                     if (string.IsNullOrEmpty(pattern))
                         continue;
@@ -130,7 +150,7 @@ namespace Yorozu.EditorTool.Folder
                         }
 
                         // 子供のディレクトリも色変える場合は^$を削除して判定する
-                        if (_settings[i].ValidChild)
+                        if (Settings[i].ValidChild)
                         {
                             var rootPattern = pattern;
                             if (pattern.StartsWith("^"))

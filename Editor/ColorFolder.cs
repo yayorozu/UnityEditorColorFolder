@@ -38,7 +38,8 @@ namespace Yorozu.EditorTool.Folder
             if (!AssetDatabase.IsValidFolder(path))
                 return;
 
-            _setting.DrawTexture(rect, path);
+            if (_setting != null)
+                _setting.DrawTexture(rect, path);
         }
     }
 }
