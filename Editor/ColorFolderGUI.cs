@@ -12,6 +12,17 @@ namespace Yorozu.EditorTool.ColorFolder
             EditorApplication.projectWindowItemOnGUI += ProjectWindowGUI;
         }
 
+        /// <summary>
+        /// 後で作成したらコールバックないので
+        /// </summary>
+        internal static void Refresh()
+        {
+            if (_setting != null) 
+                return;
+            
+            ProjectWindow();
+        }
+
         private static FolderSettingData _setting;
 
         private static void Initialize()
@@ -38,8 +49,13 @@ namespace Yorozu.EditorTool.ColorFolder
             if (!AssetDatabase.IsValidFolder(path))
                 return;
 
-            if (_setting != null)
-                _setting.DrawTexture(rect, path);
+            if (_setting == null)
+            {
+                EditorApplication.projectWindowItemOnGUI -= ProjectWindowGUI;
+                return;
+            }
+            
+            _setting.DrawTexture(rect, path);
         }
     }
 }

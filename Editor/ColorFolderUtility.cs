@@ -22,22 +22,26 @@ namespace Yorozu.EditorTool.ColorFolder
             return tempSavePath;
         }
         
-        internal static Texture2D LoadFolderTexture()
+        
+        internal static Texture2D LoadFolderTexture(bool isLarge)
         {
             var path = TempPath();
-            var filePath = Path.Combine(path, "FolderIcon.png");
+            var fileName = isLarge ? "FolderLargeIcon.png" : "FolderIcon.png";
+            var filePath = Path.Combine(path, fileName);
             // なかったら作る
             if (!File.Exists(filePath))
             {
-                var tempTexture = CreateFolderTexture();
+                var tempTexture = isLarge ? 
+                    CreateFolderLargeTexture() : 
+                    CreateFolderTexture();
                 File.WriteAllBytes(filePath, tempTexture.EncodeToPNG());
             }
-            var texture = new Texture2D(0, 0, TextureFormat.ARGB32, false);
+            var texture = new Texture2D(0, 0, TextureFormat.ARGB32, true);
             texture.LoadImage(File.ReadAllBytes(filePath));
             
             return texture;
         }
-        
+
         /// <summary>
         /// フォルダ用の画像を作成する
         /// </summary>
@@ -65,7 +69,39 @@ namespace Yorozu.EditorTool.ColorFolder
                             Mathf.FloorToInt(y / sizeDiff.y)
                         );
                         
-                        baseColor[3] = Mathf.Max(nextColor[3], baseColor[3]);
+                        //baseColor[3] = Mathf.Max(nextColor[3], baseColor[3]);
+                        for (var i = 0; i < 3; i++)
+                            baseColor[i] = 1f;
+
+                        folderTexture.SetPixel(x, y, baseColor);
+                    }
+                }
+                
+                folderTexture.Apply();
+                return folderTexture;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        }
+        
+        /// <summary>
+        /// フォルダ用の画像を作成する
+        /// </summary>
+        private static Texture2D CreateFolderLargeTexture()
+        {
+            try
+            {
+                var foldContent = EditorGUIUtility.IconContent("Folder On Icon");
+                var folderTexture = Copy(foldContent.image);
+                
+                for (var x = 0; x < folderTexture.width; x++)
+                {
+                    for (var y = 0; y < folderTexture.height; y++)
+                    {
+                        var baseColor = folderTexture.GetPixel(x, y);
                         for (var i = 0; i < 3; i++)
                             baseColor[i] = 1f;
 

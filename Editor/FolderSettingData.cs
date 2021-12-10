@@ -13,11 +13,14 @@ namespace Yorozu.EditorTool.ColorFolder
     {
         [NonSerialized]
         private Dictionary<int, Texture> _cacheTexture = new Dictionary<int, Texture>();
+        private Dictionary<int, Texture> _cacheLargeTexture = new Dictionary<int, Texture>();
 
         [NonSerialized]
         private Texture2D _bgTexture;
         [NonSerialized]
         private Texture2D _folderTexture;
+        [NonSerialized]
+        private Texture2D _folderLargeTexture;
 
         [Serializable]
         internal class Setting
@@ -32,7 +35,7 @@ namespace Yorozu.EditorTool.ColorFolder
             [SerializeField] 
             internal bool ValidChild;
             [SerializeField]
-            internal List<string> Pattern = new List<string>();
+            internal List<string> Pattern = new List<string> {""};
         }
         
         [FormerlySerializedAs("_settings")]
@@ -61,7 +64,9 @@ namespace Yorozu.EditorTool.ColorFolder
                 _bgTexture = Utility.LoadBackgroundTexture();
 
             if (_folderTexture == null) 
-                _folderTexture = Utility.LoadFolderTexture();
+                _folderTexture = Utility.LoadFolderTexture(false);
+            if (_folderLargeTexture == null) 
+                _folderLargeTexture = Utility.LoadFolderTexture(true);
         }
 
         
@@ -75,16 +80,26 @@ namespace Yorozu.EditorTool.ColorFolder
             if (!Match(path, out var index)) 
                 return;
             
+            var isLarge = false;
             // OneRow もしくは Two Row Left
             if (Math.Abs(rect.height - RowHeight) < float.Epsilon)
             {
-                if (rect.x <= TwoColumnRightX) 
+                rect.yMin -= 1;
+                rect.size = new Vector2(rect.height, rect.height + 0.5f);
+                if (rect.x <= TwoColumnRightX)
+                {
                     rect.xMin += 2f;
-                
-                rect.size = new Vector2(rect.height, rect.height);
+                    rect.xMax += 3f;
+                }
+                else
+                {
+                    rect.xMin -= 0.5f;
+                    rect.xMax += 0.8f;
+                }
             }
             else
             {
+                isLarge = true;
                 rect.size = new Vector2(rect.width, rect.width);
             }
 
@@ -95,9 +110,9 @@ namespace Yorozu.EditorTool.ColorFolder
                 GUI.DrawTexture(rect, _bgTexture, ScaleMode.StretchToFill);
             }
 
-            var texture = GetCacheTexture(index, Settings[index]);
+            var texture = GetCacheTexture(index, Settings[index], isLarge);
             if (texture != null)
-                GUI.DrawTexture(rect, texture, ScaleMode.ScaleToFit);
+                GUI.DrawTexture(rect, texture, ScaleMode.StretchToFill);
         }
 
         private bool Match(string path, out int findIndex)
@@ -147,23 +162,25 @@ namespace Yorozu.EditorTool.ColorFolder
         /// <summary>
         /// テクスチャをキャッシュからロード
         /// </summary>
-        private Texture GetCacheTexture(int index, Setting setting)
+        private Texture GetCacheTexture(int index, Setting setting, bool isLarge)
         {
             if (setting.ChangeTexture != null)
                 return setting.ChangeTexture;
-            
-            if (_cacheTexture.TryGetValue(index, out var outTexture))
+
+            var targetDic = isLarge ? _cacheLargeTexture : _cacheTexture;
+            if (targetDic.TryGetValue(index, out var outTexture))
             {
                 return outTexture;
             }
 
-            if (_folderTexture == null)
+            var src = isLarge ? _folderLargeTexture : _folderTexture; 
+            if (src == null)
                 return null;
 
             // テクスチャのコピー
             try
             {
-                var dst = _folderTexture.Copy();
+                var dst = src.Copy();
                 for (var x = 0; x < dst.width; x++)
                 {
                     for (var y = 0; y < dst.height; y++)
@@ -175,7 +192,7 @@ namespace Yorozu.EditorTool.ColorFolder
                 }
                 
                 dst.Apply();
-                _cacheTexture.Add(index, dst);
+                targetDic.Add(index, dst);
                 return dst;
             }
             catch (Exception e)

@@ -39,6 +39,7 @@ namespace Yorozu.EditorTool.ColorFolder
                 DrawCustomGUI();
                 if (check.changed)
                 {
+                    ColorFolderGUI.Refresh();
                     _data.Reset();
                     var projectBrowserType = typeof(EditorWindow).Assembly.GetType("UnityEditor.ProjectBrowser");
                     var projects = Resources.FindObjectsOfTypeAll(projectBrowserType);
@@ -66,7 +67,7 @@ namespace Yorozu.EditorTool.ColorFolder
                 {
                     using (new EditorGUILayout.HorizontalScope(EditorStyles.helpBox))
                     {
-                        EditorGUILayout.LabelField(i.ToString(), EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField(string.Format("Priority [{0}]", i), EditorStyles.boldLabel);
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button(Styles.Delete, Styles.Style))
                         {
