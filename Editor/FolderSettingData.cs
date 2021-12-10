@@ -36,6 +36,9 @@ namespace Yorozu.EditorTool.ColorFolder
             internal bool ValidChild;
             [SerializeField]
             internal List<string> Pattern = new List<string> {""};
+
+            [NonSerialized]
+            internal List<string> RootPatterns;
         }
         
         [FormerlySerializedAs("_settings")]
@@ -54,6 +57,10 @@ namespace Yorozu.EditorTool.ColorFolder
             _bgTexture = null;
             _cacheTexture.Clear();   
             _cacheLargeTexture.Clear();
+            for (var i = 0; i < Settings.Count; i++)
+            {
+                Settings[i].RootPatterns = null;
+            }
         }
 
         /// <summary>
@@ -122,39 +129,43 @@ namespace Yorozu.EditorTool.ColorFolder
             var fileName = System.IO.Path.GetFileName(path);
             for (var i = 0; i < Settings.Count; i++)
             {
-                foreach (var pattern in Settings[i].Pattern)
+                // キャッシュ
+                if (Settings[i].ValidChild && Settings[i].RootPatterns == null)
                 {
+                    Settings[i].RootPatterns = new List<string>(Settings[i].Pattern.Count);
+                    foreach (var pattern in Settings[i].Pattern)
+                    {
+                        var rootPattern = pattern;
+                        if (pattern.StartsWith("^"))
+                            rootPattern = rootPattern.Substring(1);
+                        else
+                            rootPattern = ".*" + rootPattern;
+                            
+                        if (pattern.EndsWith("$"))
+                            rootPattern = rootPattern.Substring(0, rootPattern.Length - 1);
+                        else
+                            rootPattern += ".*";
+                        
+                        Settings[i].RootPatterns.Add(rootPattern);
+                    }
+                }
+
+                for (var j = 0; j < Settings[i].Pattern.Count; j++)
+                {
+                    var pattern = Settings[i].Pattern[j];
                     if (string.IsNullOrEmpty(pattern))
                         continue;
 
                     // 正規表現入力中はエラーになることがあるので無視する
                     try
                     {
-                        if (Regex.IsMatch(fileName, pattern))
+                        if (Regex.IsMatch(fileName, pattern) ||
+                            // 子供のディレクトリも色変える場合
+                            Settings[i].ValidChild && Regex.IsMatch(path, $"/{Settings[i].RootPatterns[j]}/")
+                        )
                         {
                             findIndex = i;
                             return true;
-                        }
-
-                        // 子供のディレクトリも色変える場合は^$を削除して判定する
-                        if (Settings[i].ValidChild)
-                        {
-                            var rootPattern = pattern;
-                            if (pattern.StartsWith("^"))
-                                rootPattern = rootPattern.Substring(1);
-                            else
-                                rootPattern = ".*" + rootPattern;
-                            
-                            if (pattern.EndsWith("$"))
-                                rootPattern = rootPattern.Substring(0, rootPattern.Length - 1);
-                            else
-                                rootPattern += ".*";
-
-                            if (Regex.IsMatch(path, $"/{rootPattern}/"))
-                            {
-                                findIndex = i;
-                                return true;
-                            }
                         }
                     }
                     catch
