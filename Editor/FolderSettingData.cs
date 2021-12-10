@@ -142,8 +142,14 @@ namespace Yorozu.EditorTool.ColorFolder
                             var rootPattern = pattern;
                             if (pattern.StartsWith("^"))
                                 rootPattern = rootPattern.Substring(1);
+                            else
+                                rootPattern = ".*" + rootPattern;
+                            
                             if (pattern.EndsWith("$"))
                                 rootPattern = rootPattern.Substring(0, rootPattern.Length - 1);
+                            else
+                                rootPattern += ".*";
+
                             if (Regex.IsMatch(path, $"/{rootPattern}/"))
                             {
                                 findIndex = i;
