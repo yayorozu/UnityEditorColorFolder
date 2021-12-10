@@ -1,8 +1,8 @@
 {
-  "name": "yorozu.editor-tool",
+  "name": "yorozu.color-folder",
   "version": "1.0.0",
   "displayName": "Color Folder",
-  "description": "Can Change Project Window Folder Icon or Color",
+  "description": "Can Change Folder Icon or Folder Color of Project Window",
   "unity": "2020.3",
   "keywords": [
     "EditorTool",
