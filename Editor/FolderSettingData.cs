@@ -53,6 +53,7 @@ namespace Yorozu.EditorTool.ColorFolder
         {
             _bgTexture = null;
             _cacheTexture.Clear();   
+            _cacheLargeTexture.Clear();
         }
 
         /// <summary>
@@ -65,6 +66,7 @@ namespace Yorozu.EditorTool.ColorFolder
 
             if (_folderTexture == null) 
                 _folderTexture = Utility.LoadFolderTexture(false);
+                
             if (_folderLargeTexture == null) 
                 _folderLargeTexture = Utility.LoadFolderTexture(true);
         }
