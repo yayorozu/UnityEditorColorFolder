@@ -189,7 +189,10 @@ namespace Yorozu.EditorTool.ColorFolder
             var targetDic = isLarge ? _cacheLargeTexture : _cacheTexture;
             if (targetDic.TryGetValue(index, out var outTexture))
             {
-                return outTexture;
+                if (outTexture != null)
+                    return outTexture;
+
+                targetDic.Remove(index);
             }
 
             var src = isLarge ? _folderLargeTexture : _folderTexture; 
