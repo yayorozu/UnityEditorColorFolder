@@ -21,8 +21,7 @@ namespace Yorozu.EditorTool.ColorFolder
             
             return tempSavePath;
         }
-        
-        
+
         internal static Texture2D LoadFolderTexture(bool isLarge)
         {
             var path = TempPath();
