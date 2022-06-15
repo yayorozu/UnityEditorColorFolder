@@ -36,6 +36,7 @@ namespace Yorozu.EditorTool.ColorFolder
         {
             using (var check = new EditorGUI.ChangeCheckScope())
             {
+                serializedObject.UpdateIfRequiredOrScript();
                 DrawCustomGUI();
                 if (check.changed)
                 {
@@ -48,6 +49,7 @@ namespace Yorozu.EditorTool.ColorFolder
                         project.Repaint();
                     }
                 }
+                serializedObject.ApplyModifiedProperties();
             }
         }
 
