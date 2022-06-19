@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -26,7 +27,7 @@ namespace Yorozu.EditorTool.ColorFolder
         internal class Setting
         {
             [SerializeField]
-            internal Color Color = new Color(1, 1, 1, 1);
+            internal Color Color = new Color(1, 1, 1, 0.6f);
             [SerializeField]
             internal Texture ChangeTexture;
             /// <summary>
@@ -34,11 +35,39 @@ namespace Yorozu.EditorTool.ColorFolder
             /// </summary>
             [SerializeField] 
             internal bool ValidChild;
+            /// <summary>
+            /// フォルダ以外のアセットの背景色を変更するか？
+            /// </summary>
+            [SerializeField] 
+            internal bool ValidOtherAsset;
+            [SerializeField] 
+            internal float BackgroundColorAlpha = 0.05f;
             [SerializeField]
             internal List<string> Pattern = new List<string> {""};
 
             [NonSerialized]
             internal List<string> RootPatterns;
+            
+            [NonSerialized]
+            private Color? _bgColor;
+
+            internal Color BGColor
+            {
+                get
+                {
+                    _bgColor ??= new Color(Color.r, Color.g, Color.b, BackgroundColorAlpha);
+                    return _bgColor.Value;
+                }
+            }
+
+            /// <summary>
+            /// パラメータが変わったらデータを消す
+            /// </summary>
+            internal void Reset()
+            {
+                _bgColor = null;
+                RootPatterns = null;
+            }
         }
         
         [FormerlySerializedAs("_settings")]
@@ -59,7 +88,7 @@ namespace Yorozu.EditorTool.ColorFolder
             _cacheLargeTexture.Clear();
             for (var i = 0; i < Settings.Count; i++)
             {
-                Settings[i].RootPatterns = null;
+                Settings[i].Reset();
             }
         }
 
@@ -88,7 +117,16 @@ namespace Yorozu.EditorTool.ColorFolder
             
             if (!Match(path, out var index)) 
                 return;
-            
+
+            if (!AssetDatabase.IsValidFolder(path))
+            {
+                if (Settings[index].ValidOtherAsset)
+                {
+                    EditorGUI.DrawRect(rect, Settings[index].BGColor);
+                }
+                return;
+            }
+
             var isLarge = false;
             // OneRow もしくは Two Row Left
             if (Math.Abs(rect.height - RowHeight) < float.Epsilon)

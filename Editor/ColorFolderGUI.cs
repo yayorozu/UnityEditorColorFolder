@@ -46,8 +46,6 @@ namespace Yorozu.EditorTool.ColorFolder
         {
             Initialize();
             var path = AssetDatabase.GUIDToAssetPath(guid);
-            if (!AssetDatabase.IsValidFolder(path))
-                return;
 
             if (_setting == null)
             {

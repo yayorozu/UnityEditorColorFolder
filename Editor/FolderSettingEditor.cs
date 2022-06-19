@@ -48,6 +48,7 @@ namespace Yorozu.EditorTool.ColorFolder
                     {
                         project.Repaint();
                     }
+                    EditorUtility.SetDirty(target);
                 }
                 serializedObject.ApplyModifiedProperties();
             }
@@ -110,11 +111,16 @@ namespace Yorozu.EditorTool.ColorFolder
                             false,
                              Styles.Height);
 
-                        using (new EditorGUILayout.HorizontalScope())
+                        setting.ValidChild = EditorGUILayout.Toggle("Apply Child Folder", setting.ValidChild);
+                        setting.ValidOtherAsset = EditorGUILayout.Toggle("Apply Other Asset Background Color", setting.ValidOtherAsset);
+                        if (setting.ValidOtherAsset)
                         {
-                            EditorGUILayout.LabelField("Apply Child Folder");
-                            GUILayout.FlexibleSpace();
-                            setting.ValidChild = EditorGUILayout.Toggle(GUIContent.none, setting.ValidChild);
+                            setting.BackgroundColorAlpha = EditorGUILayout.Slider(
+                                "Background Color Alpha",
+                                setting.BackgroundColorAlpha,
+                                0.001f,
+                                0.3f
+                            );
                         }
 
                         using (new EditorGUILayout.VerticalScope("box"))
