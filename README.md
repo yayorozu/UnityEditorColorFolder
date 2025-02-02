@@ -41,3 +41,7 @@ Add Package from git Url より
 `https://github.com/yayorozu/UnityEditorColorFolder.git`
 を指定することで Package の追加ができます
 
+# ライセンス
+
+本プロジェクトは [MIT License](LICENSE) の下でライセンスされています。  
+詳細については、LICENSE ファイルをご覧ください。
